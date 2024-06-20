@@ -61,6 +61,9 @@ body {
 }
 
 #add-btn {
+    display: flex;
+    align-items: center;
+
     height: 100%;
     max-width: 80px;
 
@@ -70,6 +73,11 @@ body {
     white-space: nowrap;
     background-color: #09f;
     color: #efefef;
+}
+
+#add-btn i {
+    margin: auto 0;
+    margin-right: 4px;
 }
 
 /* Seccion del Formulario */
@@ -223,7 +231,7 @@ body {
 }
 
 .notes-item a {
-    transition: color .3s cubic-bezier(.10,.7,.75,.84);
+    transition: color .3s cubic-bezier(.10, .7, .75, .84);
 }
 
 .notes-item a.active,
@@ -240,10 +248,10 @@ body {
     height: 1px;
     margin-top: 8px;
     background-color: #00000028;
-    transition: background-color .3s cubic-bezier(.10,.7,.75,.84);
+    transition: background-color .3s cubic-bezier(.10, .7, .75, .84);
 }
 
-.notes-item a.active + .line {
+.notes-item a.active+.line {
     background-color: #42A5F5;
 }
 

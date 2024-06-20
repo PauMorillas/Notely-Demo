@@ -283,22 +283,35 @@ function closeEditDialog() {
 }
 
 function deleteNote(noteElement) {
-  const confirmation = confirm("¿Estás seguro de que quieres eliminar esta nota?");
-  if (confirmation) {
-    // Elimina la nota del array de notas
-    const noteId = noteElement.dataset.noteId;
-    const noteIndex = notes.findIndex(note => note.dataset.noteId === noteId);
+  Swal.fire({
+    title: '¡Cuidado!',
+    text: '¿Estás seguro de que quieres eliminar esta nota?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Elimina la nota del array de notas
+      const noteId = noteElement.dataset.noteId;
+      const noteIndex = notes.findIndex(note => note.dataset.noteId === noteId);
 
-    if (noteIndex > -1) {
-      notes.splice(noteIndex, 1);
+      if (noteIndex > -1) {
+        notes.splice(noteIndex, 1);
+      }
+      // Elimina el elemento del DOM
+      noteElement.remove();
+
+      // Actualiza la visualización de las notas
+      displayNotes();
+      
+      Swal.fire('Eliminado!', 'La nota ha sido eliminada.', 'success');
+    } else if (result.isDenied) {
+      Swal.fire('Cancelado', 'La nota no ha sido eliminada.', 'info');
     }
-    // Elimina el elemento del DOM
-    noteElement.remove();
-
-    // Actualiza la visualización de las notas
-    displayNotes();
-  }
+  });
 }
+
 
 function setDate() {
   const date = new Date();
