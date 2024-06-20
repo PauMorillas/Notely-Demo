@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notely</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+    <!-- Barra de búsqueda -->
+    <section id="notes-search-box">
+        <div class="container">
+            <i class='bx bx-search-alt'></i>
+            <input type="text" name="search-inp" id="search-inp" placeholder="Search for notes">
+            <button type="submit" id="add-btn" class="btn t-background-e">
+                <i class='bx bx-plus'></i>
+                Add
+            </button>
+        </div>
+    </section>
+
+    <!-- Diálogo para añadir notas -->
+    <section id="add-container" class="hidden">
+        <form id="add-form">
+            <h2>Add Note</h2>
+
+            <div class="container-fields">
+                <div class="field-item">
+                    <h3>Title</h3>
+                    <input type="text" name="title" id="title" placeholder="Add title" required>
+                </div>
+
+                <div class="field-item">
+                    <h3>Category</h3>
+                    <select name="category" id="category" required>
+                        <option value="Personal">Personal</option>
+                        <option value="Home">Home</option>
+                        <option value="Business">Business</option>
+                    </select>
+                </div>
+
+                <div class="field-item">
+                    <div class="top-row-wrapper">
+                        <div class="title-wrapper">
+                            <h3>Description</h3>
+                            <span>(optional)</span>
+                        </div>
+                        <div class="container-count">
+                            <p><span id="character-count">0</span>/200</p>
+                        </div>
+                    </div>
+
+                    <textarea type="text" name="description" id="description" placeholder="Add description" rows="5"
+                        maxlength="200"></textarea>
+                </div>
+            </div>
+
+            <div class="button-wrapper">
+                <button type="reset" id="cancelBtn" class="btn t-color-e">Cancel</button>
+                <button type="submit" id="submitBtn" class="btn t-color-e t-background-e">Add</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Sección de notas -->
+    <section id="notes-container">
+        <h1>Your notes</h1>
+        <nav class="notes-navbar">
+            <ul class="notes-list">
+                <li class="notes-item"><a href="#" class="link active" id="all">All</a><div class="line active"></div></li>
+                <li class="notes-item"><a href="#" class="link" id="personal">Personal</a><div class="line"></div></li>
+                <li class="notes-item"><a href="#" class="link" id="home">Home</a><div class="line"></div></li>
+                <li class="notes-item"><a href="#" class="link" id="business">Business</a><div class="line"></div></li>
+            </ul>
+        </nav>
+
+        <div id="display-notes">
+            <!-- Las notas se insertan aquí -->  
+        </div>
+        <div id="error-container">
+            <!-- Mensajes de error se insertan aquí -->
+        </div>
+    </section>
+
+    <script src="./js/script.js"></script>
+</body>
+
+</html>
