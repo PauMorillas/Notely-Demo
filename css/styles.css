@@ -18,6 +18,23 @@
     text-decoration: none;
 }
 
+.completed {
+    text-decoration: line-through;
+    filter: drop-shadow(10px);
+}
+
+.op-6 {
+    opacity: .6;
+}
+
+.icon-checked {
+    content: url('../svg/material-symbols_check-box.svg');
+}
+
+.icon-unchecked {
+    content: url('../svg/material-symbols_check-box-outline-blank.svg');
+}
+
 /*  */
 
 body {
@@ -258,7 +275,7 @@ body {
 /* Seccion de Notas */
 #display-notes {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 }
 
@@ -415,3 +432,31 @@ body {
         opacity: 1;
     }
 }
+
+/* Media Queries */
+
+/* Estilos para teléfonos pequeños (320px y menos) */
+@media (max-width: 320px) {}
+
+/* Estilos para teléfonos medianos (480px y menos) */
+@media (max-width: 480px) {
+    
+}
+
+/* Estilos para tablets en modo vertical (768px y menos) */
+@media (max-width: 768px) {
+
+}
+
+/* Estilos para tablets en modo horizontal y pequeños laptops (992px y menos) */
+@media (max-width: 992px) {
+    #display-notes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Estilos para laptops y desktops pequeños (1200px y menos) */
+@media (max-width: 1200px) {}
+
+/* Estilos para desktops medianos a grandes (1440px y menos) */
+@media (max-width: 1440px) {}

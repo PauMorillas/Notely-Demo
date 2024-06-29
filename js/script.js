@@ -232,6 +232,7 @@ function setIcons() {
 
   const checkboxIcon = createNewElement("img");
   checkboxIcon.setAttribute("src", "../svg/material-symbols_check-box-outline-blank.svg");
+  checkboxIcon.classList.add("icon-unchecked");
 
   const editIcon = createNewElement("img");
   editIcon.setAttribute("src", "../svg/material-symbols_edit.svg");
@@ -251,6 +252,13 @@ function setIcons() {
 }
 
 function handleIconEvents(noteElement, icons) {
+  const checkboxIcon = icons[0]
+  checkboxIcon.addEventListener("click", () => {
+    markAsCompleted(noteElement);
+    toggleImage(checkboxIcon);
+
+  })
+
   const editIcon = icons[1];
   editIcon.addEventListener("click", () => {
     openEditDialog(noteElement);
@@ -260,6 +268,23 @@ function handleIconEvents(noteElement, icons) {
   deleteIcon.addEventListener("click", () => {
     deleteNote(noteElement);
   });
+}
+
+function markAsCompleted(noteElement) {
+  const title = noteElement.querySelector("h4"),
+        description = noteElement.querySelector(".description");
+
+  const components = [title, description];
+
+  for (const component of components) {
+    component.classList.toggle("completed");
+  }
+  noteElement.classList.toggle("op-6");
+}
+
+function toggleImage(img) {
+  img.classList.toggle('icon-checked');
+  img.classList.toggle('icon-unchecked');
 }
 
 function openEditDialog(noteElement) {
@@ -304,14 +329,13 @@ function deleteNote(noteElement) {
 
       // Actualiza la visualización de las notas
       displayNotes();
-      
+
       Swal.fire('Eliminado!', 'La nota ha sido eliminada.', 'success');
     } else if (result.isDenied) {
       Swal.fire('Cancelado', 'La nota no ha sido eliminada.', 'info');
     }
   });
 }
-
 
 function setDate() {
   const date = new Date();
