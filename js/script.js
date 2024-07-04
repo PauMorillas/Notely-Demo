@@ -124,7 +124,7 @@ function createNote(values) {
   return noteElement
 }
 
-function filterNotes(category) {
+function filterNotesByCategory(category) {
   const filteredNotes = [];
   for (const note of notes) {
     // Verifica si la nota contiene una clase de categoría
@@ -138,28 +138,29 @@ function filterNotes(category) {
 
 // TODO: REFACTORIZAR
 function displayNotes(filteredNotes = notes) {
-  if (!Array.isArray(filteredNotes)) {
-    filteredNotes = [filteredNotes]; // Convert single note to an array
-  }
-
   const notesList = document.getElementById("display-notes");
-  notesList.innerHTML = ""; // Clear existing notes
+  notesList.innerHTML = "";
   clearErrorDisplay();
 
-  if (filteredNotes.length === 0) {
-    handleError("You don't have any notes in this category.");
-    return;
-  }
+  // if (filteredNotes.length === 0) {
+  //   displayErrorMessage(category === "all" ? "general" : "category");
+  //   return;
+  // }
 
-  // Sort notes by date before displaying
-  filteredNotes.sort((a, b) => {
-    console.log("sorteado");
+  const sortedNotes = sortNotesByDate(filteredNotes);
+  appendNotesToDOM(sortedNotes, notesList);
+}
+
+function sortNotesByDate(notes) {
+  return notes.sort((a, b) => {
     const dateA = parseInt(a.dataset.creationDate, 10);
     const dateB = parseInt(b.dataset.creationDate, 10);
-    return dateB - dateA; // Sort by descending for newest first
+    return dateB - dateA; // Orden descendente, las nuevas primero
   });
+}
 
-  filteredNotes.forEach(note => {
+function appendNotesToDOM(notes, notesList) {
+  notes.forEach(note => {
     if (note) { // Ensure note is not undefined
       const existingNote = notesList.querySelector(`.note[data-note-id="${note.dataset.noteId}"]`);
       if (!existingNote) {
@@ -169,18 +170,34 @@ function displayNotes(filteredNotes = notes) {
   });
 }
 
-function handleError(message) {
+function displayErrorMessage(errorContext) {
   const errorContainer = document.getElementById("error-container");
   errorContainer.innerHTML = "";
 
-  const errorMessageWrapper = createNewElement("div");
+  const errorMessageWrapper = createNewElement("div", "");
   errorMessageWrapper.classList.add("error-wrapper");
 
-  const errorMessage = createNewElement("p", message);
+  let errorMessageText = "";
+  let imgSrc = "../img/notFound.png";
+
+  switch (errorContext) {
+    case "category":
+      errorMessageText = "No notes found in this category.";
+      break;
+    case "search":
+      errorMessageText = "No notes found matching your search.";
+      imgSrc = "../img/search-results.png"
+      break;
+    default:
+      errorMessageText = "No notes available.";
+      break;
+  }
+
+  const errorMessage = createNewElement("p", errorMessageText);
   errorMessage.classList.add("error-message");
 
-  const img = createNewElement("img");
-  img.setAttribute("src", "../img/notFound.png");
+  const img = createNewElement("img", "");
+  img.setAttribute("src", imgSrc);
 
   errorMessageWrapper.appendChild(img);
   errorMessageWrapper.appendChild(errorMessage);
@@ -206,14 +223,15 @@ function setupCategoryLinks() {
   Object.keys(categoryLinks).forEach(key => {
     const link = categoryLinks[key];
     link.addEventListener("click", (e) => {
+      console.log("Key:", key);
       e.preventDefault();
-      handleError("");
       if (key === "all") {
         displayNotes();
-      } else {
-        const filteredNotes = filterNotes(key);
-        displayNotes(filteredNotes);
+        return
       }
+
+      const filteredNotes = filterNotesByCategory(key);
+      displayNotes(filteredNotes);
     });
   });
 }
@@ -256,7 +274,6 @@ function handleIconEvents(noteElement, icons) {
   checkboxIcon.addEventListener("click", () => {
     markAsCompleted(noteElement);
     toggleImage(checkboxIcon);
-
   })
 
   const editIcon = icons[1];
@@ -272,7 +289,7 @@ function handleIconEvents(noteElement, icons) {
 
 function markAsCompleted(noteElement) {
   const title = noteElement.querySelector("h4"),
-        description = noteElement.querySelector(".description");
+    description = noteElement.querySelector(".description");
 
   const components = [title, description];
 
@@ -391,7 +408,22 @@ function handleEditNote() {
 function handleAddNote() {
   const newNote = getValues();
   notes.push(newNote);
-  displayNotes(newNote);
+  displayNotes(notes);
+  console.log(notes);
   categoryLinks.all.click();
   hideAddDialog();
 }
+
+const searchInp = document.getElementById("search-inp");
+
+searchInp.addEventListener("input", () => {
+  const query = searchInp.value.toLowerCase();
+
+  const filteredNotes = notes.filter(note => {
+    const title = note.querySelector("h4").textContent.toLowerCase();
+    const description = note.querySelector("p.description").textContent.toLowerCase();
+
+    return title.includes(query) || description.includes(query);
+  });
+  displayNotes(filteredNotes);
+});
