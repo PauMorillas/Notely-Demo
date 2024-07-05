@@ -38,7 +38,7 @@ function hideAddDialog() {
 const descriptionTextarea = document.getElementById("description");
 const characterCounter = document.getElementById("character-count");
 
-descriptionTextarea.addEventListener("keyup", () => {
+descriptionTextarea.addEventListener("input", () => {
   let textLength = descriptionTextarea.value.length;
   if (textLength == 0) {
     characterCounter.textContent = 0;

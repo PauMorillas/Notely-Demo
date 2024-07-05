@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -42,6 +44,7 @@ body {
     display: grid;
     grid-template-rows: 140px 1fr;
     place-content: center;
+    place-items: center;
 }
 
 #notes-search-box {
@@ -274,17 +277,21 @@ body {
 
 /* Seccion de Notas */
 #display-notes {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    /* grid-template-columns: repeat(3, 1fr); */
+    flex-wrap: wrap;
     gap: 1rem;
+    align-items: center;
+    /* justify-content: center; */
 }
 
 .note {
     display: grid;
-    grid-template-rows: 2.5rem 1.875rem auto 1.25rem;
-    max-width: 21.875rem;
-    height: 16rem;
-    padding: 1rem;
+    grid-template-rows: 40px 34px auto 1.25rem;
+    max-width: 21.25rem;
+    width: 25rem;
+    height: 250px;
+    padding: 1.25rem 1rem;
     border-radius: 16px;
     background-color: #fff;
     font-size: .875em;
@@ -292,12 +299,13 @@ body {
     word-break: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
+    overflow: hidden;
 }
 
 .note--top-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: .625rem;
+    align-items: flex-start;
     height: 100%;
 }
 
@@ -314,7 +322,7 @@ body {
 .note .icon-wrapper {
     display: flex;
     align-items: center;
-    gap: .625rem;
+    gap: .9375rem;
 }
 
 .note .icon-wrapper button {
@@ -345,24 +353,22 @@ body {
 
 .note h4 {
     font-weight: 600;
-    font-size: 16px;
-    height: min-content;
+    font-size: 18px;
     justify-self: flex-start;
-    margin-bottom: .625rem;
+    margin-bottom: .875rem;
 }
 
 .note .description {
     justify-self: flex-start;
     color: #212121de;
     font-size: 1rem;
-    margin-bottom: .625rem;
-    /* margin: auto 0; */
 }
 
 .note .date {
     color: #333333dd;
     align-self: flex-end;
     justify-self: flex-end;
+    font-family: "Nunito", sans-serif;
 }
 
 /* Seccion Errores */
