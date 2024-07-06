@@ -137,15 +137,15 @@ function filterNotesByCategory(category) {
 }
 
 // TODO: REFACTORIZAR
-function displayNotes(filteredNotes = notes) {
+function displayNotes(filteredNotes = notes, errorContext) {
   const notesList = document.getElementById("display-notes");
   notesList.innerHTML = "";
   clearErrorDisplay();
 
-  // if (filteredNotes.length === 0) {
-  //   displayErrorMessage(category === "all" ? "general" : "category");
-  //   return;
-  // }
+  if (filteredNotes.length === 0) {
+    displayErrorMessage(errorContext);
+    return
+  }
 
   const sortedNotes = sortNotesByDate(filteredNotes);
   appendNotesToDOM(sortedNotes, notesList);
@@ -182,14 +182,14 @@ function displayErrorMessage(errorContext) {
 
   switch (errorContext) {
     case "category":
-      errorMessageText = "No notes found in this category.";
+      errorMessageText = "No notes found in this category";
       break;
     case "search":
-      errorMessageText = "No notes found matching your search.";
+      errorMessageText = "No notes found matching your search";
       imgSrc = "../img/search-results.png"
       break;
     default:
-      errorMessageText = "No notes available.";
+      errorMessageText = "No notes available";
       break;
   }
 
@@ -231,7 +231,7 @@ function setupCategoryLinks() {
       }
 
       const filteredNotes = filterNotesByCategory(key);
-      displayNotes(filteredNotes);
+      displayNotes(filteredNotes, "category");
     });
   });
 }
@@ -328,7 +328,7 @@ function deleteNote(noteElement) {
   Swal.fire({
     title: '¡Cuidado!',
     text: '¿Estás seguro de que quieres eliminar esta nota?',
-    icon: 'warning',
+    icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Eliminar',
     cancelButtonText: 'Cancelar'
@@ -409,7 +409,6 @@ function handleAddNote() {
   const newNote = getValues();
   notes.push(newNote);
   displayNotes(notes);
-  console.log(notes);
   categoryLinks.all.click();
   hideAddDialog();
 }
@@ -425,5 +424,5 @@ searchInp.addEventListener("input", () => {
 
     return title.includes(query) || description.includes(query);
   });
-  displayNotes(filteredNotes);
+  displayNotes(filteredNotes, "search");
 });
