@@ -1,7 +1,7 @@
+const modalBg = document.getElementById("modal-background");
 const formContainer = document.getElementById("add-container");
 const addForm = document.getElementById("add-form");
 const addBtn = document.getElementById("add-btn");
-
 
 let isFormVisible = false;
 
@@ -17,9 +17,10 @@ function showAddDialog() {
   formContainer.classList.remove("a-hideForm");
   // Formulario oculto, aplica la animación de aparición
   formContainer.classList.add("a-displayForm");
-  setTimeout(() => {
-    formContainer.classList.remove("hidden");
-  }, 200);
+
+  formContainer.classList.remove("hidden");
+  modalBg.classList.add("show");
+
   isFormVisible = true; // Actualiza el estado a visible
 }
 
@@ -28,6 +29,7 @@ function hideAddDialog() {
   formContainer.classList.add("a-hideForm");
   setTimeout(() => {
     formContainer.classList.add("hidden");
+    modalBg.classList.remove("show");
   }, 200);
   isFormVisible = false;
   addForm.reset(); // Limpiar el formulario
@@ -137,7 +139,7 @@ function filterNotesByCategory(category) {
 }
 
 // TODO: REFACTORIZAR
-function displayNotes(filteredNotes = notes, errorContext) {
+function displayNotes(filteredNotes = notes, errorContext = "default") {
   const notesList = document.getElementById("display-notes");
   notesList.innerHTML = "";
   clearErrorDisplay();
@@ -187,6 +189,9 @@ function displayErrorMessage(errorContext) {
     case "search":
       errorMessageText = "No notes found matching your search";
       imgSrc = "../img/search-results.png"
+      break;
+    case "completed":
+      errorMessageText = "You don't have any completed notes";
       break;
     default:
       errorMessageText = "No notes available";
@@ -410,6 +415,7 @@ function handleAddNote() {
   notes.push(newNote);
   displayNotes(notes);
   categoryLinks.all.click();
+  completedCheckbox.checked = false;
   hideAddDialog();
 }
 
@@ -426,3 +432,25 @@ searchInp.addEventListener("input", () => {
   });
   displayNotes(filteredNotes, "search");
 });
+
+const completedCheckbox = document.getElementById("checkbox");
+completedCheckbox.addEventListener("click", handleCheckbox)
+
+function handleCheckbox() {
+  if (completedCheckbox.checked === true) {
+    filterCompletedNotes(notes);
+  } else if (completedCheckbox.checked === false) {
+    categoryLinks.all.click();
+  }
+}
+
+function filterCompletedNotes(notes) {
+  let completedNotes = [];
+  notes.forEach(note => {
+    const title = note.querySelector("h4");
+    if (title.classList.contains("completed")) {
+      completedNotes.push(note);
+    }
+  });
+  displayNotes(completedNotes, "completed");
+}
