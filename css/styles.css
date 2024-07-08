@@ -435,6 +435,12 @@ body {
     font-weight: 600;
 }
 
+.error-message {
+    color: #EF5350;
+    font-size: .875rem;
+    margin-top: .3125rem;
+}
+
 /* Clases para transiciones */
 
 .t-color-e {

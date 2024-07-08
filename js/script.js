@@ -33,6 +33,7 @@ function hideAddDialog() {
   }, 200);
   isFormVisible = false;
   addForm.reset(); // Limpiar el formulario
+  clearErrorDisplay();
   delete formContainer.dataset.editingNoteId; // Eliminar el estado de edición
 }
 
@@ -80,7 +81,7 @@ function getValues() {
 
   const instanceValues = { titleValue, categoryValue, descriptionValue };
 
-  return createNote(instanceValues); // Creamos la nota directamente en el DOM
+  return createNote(instanceValues);
 }
 
 // Array to store notes
@@ -119,10 +120,6 @@ function createNote(values) {
   noteElement.appendChild(description);
   noteElement.appendChild(date);
 
-  const notesList = document.getElementById("display-notes");
-  clearErrorDisplay();
-  notesList.appendChild(noteElement);
-
   return noteElement
 }
 
@@ -136,6 +133,26 @@ function filterNotesByCategory(category) {
     }
   }
   return filteredNotes;
+}
+
+function validateInput(input, parent) {
+  // Comprueba si ya hay un mensaje de error
+  let existingError = parent.querySelector(".error-message");
+
+  if (input.value.trim() === "") {
+    if (!existingError) {
+      const errorMessage = createNewElement("p", "This field is required", "error-message");
+      parent.appendChild(errorMessage);
+    }
+    return false;
+  }
+
+  // Si no hay errores, elimina el mensaje de error si existe
+  if (existingError) {
+    parent.removeChild(existingError);
+  }
+
+  return true;
 }
 
 // TODO: REFACTORIZAR
@@ -176,7 +193,7 @@ function displayErrorMessage(errorContext) {
   const errorContainer = document.getElementById("error-container");
   errorContainer.innerHTML = "";
 
-  const errorMessageWrapper = createNewElement("div", "");
+  const errorMessageWrapper = createNewElement("div");
   errorMessageWrapper.classList.add("error-wrapper");
 
   let errorMessageText = "";
@@ -211,8 +228,15 @@ function displayErrorMessage(errorContext) {
 }
 
 function clearErrorDisplay() {
+  // Contenedor de mensajes de error de las notas
   const errorContainer = document.getElementById("error-container");
   errorContainer.innerHTML = "";
+
+  // Mensajes de error del formulario
+  const errorMessage = document.querySelector(".error-message");
+  if (errorMessage) {
+    errorMessage.innerHTML = "";
+  }
 }
 
 // Links de categorias
@@ -243,9 +267,11 @@ function setupCategoryLinks() {
 
 setupCategoryLinks();
 
-function createNewElement(element = "", content) {
+function createNewElement(element = "div", content = "", className) {
   const instanceElement = document.createElement(element);
   instanceElement.textContent = content ? content : "";
+
+  instanceElement.classList.add(className);
   return instanceElement
 }
 
@@ -331,12 +357,12 @@ function closeEditDialog() {
 
 function deleteNote(noteElement) {
   Swal.fire({
-    title: '¡Cuidado!',
-    text: '¿Estás seguro de que quieres eliminar esta nota?',
+    title: 'Warning!',
+    text: 'Are you sure you want to delete this note?',
     icon: 'question',
     showCancelButton: true,
-    confirmButtonText: 'Eliminar',
-    cancelButtonText: 'Cancelar'
+    confirmButtonText: 'Delete',
+    cancelButtonText: 'Cancel'
   }).then((result) => {
     if (result.isConfirmed) {
       // Elimina la nota del array de notas
@@ -349,12 +375,9 @@ function deleteNote(noteElement) {
       // Elimina el elemento del DOM
       noteElement.remove();
 
-      // Actualiza la visualización de las notas
-      displayNotes();
-
-      Swal.fire('Eliminado!', 'La nota ha sido eliminada.', 'success');
+      Swal.fire('Deleted!', 'The note has been deleted', 'success');
     } else if (result.isDenied) {
-      Swal.fire('Cancelado', 'La nota no ha sido eliminada.', 'info');
+      Swal.fire('Cancelled', 'The note has not been deleted.', 'info');
     }
   });
 }
@@ -374,6 +397,11 @@ function setCategoryType(element, categoryValue) {
 
 addForm.addEventListener("submit", (e) => {
   e.preventDefault();
+  const titleParent = document.querySelector(".field-item");
+  const isValid = validateInput(titleInp, titleParent);
+  if (!isValid) {
+    return
+  }
 
   if (formContainer.dataset.editingNoteId) {
     handleEditNote();
@@ -413,8 +441,15 @@ function handleEditNote() {
 function handleAddNote() {
   const newNote = getValues();
   notes.push(newNote);
-  displayNotes(notes);
+  
+  // Añadir la nueva nota al DOM
+  const notesList = document.getElementById("display-notes");
+  notesList.appendChild(newNote);
+
+  // Actualiza la categoría activa para evitar inconcluencias en la UI
   categoryLinks.all.click();
+  
+  // Limpia el formulario y oculta el dialogo
   completedCheckbox.checked = false;
   hideAddDialog();
 }
