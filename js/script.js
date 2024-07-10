@@ -147,7 +147,7 @@ function validateInput(input, parent) {
     return false;
   }
 
-  // Si no hay errores, elimina el mensaje de error si existe
+  // Cuando no hay errores, elimina el mensaje de error si existe
   if (existingError) {
     parent.removeChild(existingError);
   }
@@ -271,7 +271,9 @@ function createNewElement(element = "div", content = "", className) {
   const instanceElement = document.createElement(element);
   instanceElement.textContent = content ? content : "";
 
-  instanceElement.classList.add(className);
+  if (className) {
+    instanceElement.classList.add(className);
+  }
   return instanceElement
 }
 
@@ -336,6 +338,9 @@ function toggleImage(img) {
 }
 
 function openEditDialog(noteElement) {
+  const formTitle = addForm.querySelector("h2");
+  formTitle.textContent = "Edit Note";
+
   const title = noteElement.querySelector("h4").textContent;
   const category = noteElement.querySelector("span").textContent;
   const description = noteElement.querySelector("p.description").textContent;
@@ -350,6 +355,9 @@ function openEditDialog(noteElement) {
 }
 
 function closeEditDialog() {
+  const formTitle = addForm.querySelector("h2");
+  formTitle.textContent = "Add Note";
+
   hideAddDialog();
   categoryLinks.all.click();
   delete formContainer.dataset.editingNoteId; // Elimina ID de la nota que se estaba editando
@@ -441,14 +449,14 @@ function handleEditNote() {
 function handleAddNote() {
   const newNote = getValues();
   notes.push(newNote);
-  
+  saveNotesToLocalStorage(notes);
   // Añadir la nueva nota al DOM
   const notesList = document.getElementById("display-notes");
   notesList.appendChild(newNote);
 
   // Actualiza la categoría activa para evitar inconcluencias en la UI
   categoryLinks.all.click();
-  
+
   // Limpia el formulario y oculta el dialogo
   completedCheckbox.checked = false;
   hideAddDialog();
@@ -489,3 +497,27 @@ function filterCompletedNotes(notes) {
   });
   displayNotes(completedNotes, "completed");
 }
+
+function saveNotesToLocalStorage() {
+  let localNotes = notes;
+
+  localStorage.setItem("notes", JSON.stringify(localNotes));
+  console.log(localNotes);
+}
+
+let savedNotes = localStorage.getItem("notes");
+console.log(savedNotes);
+
+function loadNotesFromLocalStorage() {
+  if (savedNotes.length > 0) {
+    savedNotes = JSON.parse(savedNotes);
+    console.log("Parsed notes:", savedNotes);
+    displayNotes(savedNotes);
+  } else {
+    console.error("No se pudo parsear");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadNotesFromLocalStorage();
+});
