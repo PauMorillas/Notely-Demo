@@ -197,7 +197,7 @@ function displayErrorMessage(errorContext) {
   errorMessageWrapper.classList.add("error-wrapper");
 
   let errorMessageText = "";
-  let imgSrc = "../img/notFound.png";
+  let imgSrc = "./img/notFound.png";
 
   switch (errorContext) {
     case "category":
@@ -205,7 +205,7 @@ function displayErrorMessage(errorContext) {
       break;
     case "search":
       errorMessageText = "No notes found matching your search";
-      imgSrc = "../img/search-results.png"
+      imgSrc = "./img/search-results.png"
       break;
     case "completed":
       errorMessageText = "You don't have any completed notes";
@@ -282,14 +282,14 @@ function setIcons() {
   iconWrapper.classList.add("icon-wrapper");
 
   const checkboxIcon = createNewElement("img");
-  checkboxIcon.setAttribute("src", "../svg/material-symbols_check-box-outline-blank.svg");
+  checkboxIcon.setAttribute("src", "./svg/material-symbols_check-box-outline-blank.svg");
   checkboxIcon.classList.add("icon-unchecked");
 
   const editIcon = createNewElement("img");
-  editIcon.setAttribute("src", "../svg/material-symbols_edit.svg");
+  editIcon.setAttribute("src", "./svg/material-symbols_edit.svg");
 
   const deleteIcon = createNewElement("img");
-  deleteIcon.setAttribute("src", "../svg/material-symbols_delete-rounded.svg");
+  deleteIcon.setAttribute("src", "./svg/material-symbols_delete-rounded.svg");
 
   const icons = [checkboxIcon, editIcon, deleteIcon];
   icons.forEach(icon => {
@@ -449,7 +449,6 @@ function handleEditNote() {
 function handleAddNote() {
   const newNote = getValues();
   notes.push(newNote);
-  saveNotesToLocalStorage(notes);
   // Añadir la nueva nota al DOM
   const notesList = document.getElementById("display-notes");
   notesList.appendChild(newNote);
@@ -497,27 +496,3 @@ function filterCompletedNotes(notes) {
   });
   displayNotes(completedNotes, "completed");
 }
-
-function saveNotesToLocalStorage() {
-  let localNotes = notes;
-
-  localStorage.setItem("notes", JSON.stringify(localNotes));
-  console.log(localNotes);
-}
-
-let savedNotes = localStorage.getItem("notes");
-console.log(savedNotes);
-
-function loadNotesFromLocalStorage() {
-  if (savedNotes.length > 0) {
-    savedNotes = JSON.parse(savedNotes);
-    console.log("Parsed notes:", savedNotes);
-    displayNotes(savedNotes);
-  } else {
-    console.error("No se pudo parsear");
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadNotesFromLocalStorage();
-});
