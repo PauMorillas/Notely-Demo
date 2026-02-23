@@ -1,6 +1,6 @@
 # 📝 Notely - App de Notas y Eventos
 
-Típica aplicación web para la gestión de notas o eventos personales. Un proyecto ligero, rápido y sin dependencias pesadas, construido para ser súper funcional y visualmente agradable. uwu
+Típica aplicación web para la gestión de notas o eventos personales. Un proyecto ligero, rápido y sin dependencias pesadas, construido para ser funcional y visualmente agradable.
 
 🌍 **[Ver el proyecto en vivo (GitHub Pages)](https://paumorillas.github.io/Notely-Demo/)**
 
