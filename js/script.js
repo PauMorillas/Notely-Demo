@@ -170,16 +170,16 @@ function displayNotes(filteredNotes = notes, errorContext = "default") {
   appendNotesToDOM(sortedNotes, notesList);
 }
 
-function sortNotesByDate(notes) {
-  return notes.sort((a, b) => {
+function sortNotesByDate(notesToSort) {
+  return notesToSort.sort((a, b) => {
     const dateA = parseInt(a.dataset.creationDate, 10);
     const dateB = parseInt(b.dataset.creationDate, 10);
     return dateB - dateA; // Orden descendente, las nuevas primero
   });
 }
 
-function appendNotesToDOM(notes, notesList) {
-  notes.forEach(note => {
+function appendNotesToDOM(notesToAppend, notesList) {
+  notesToAppend.forEach(note => {
     if (note) { // Ensure note is not undefined
       const existingNote = notesList.querySelector(`.note[data-note-id="${note.dataset.noteId}"]`);
       if (!existingNote) {
@@ -307,6 +307,7 @@ function handleIconEvents(noteElement, icons) {
   checkboxIcon.addEventListener("click", () => {
     markAsCompleted(noteElement);
     toggleImage(checkboxIcon);
+    saveNotesToLocalStorage();
   })
 
   const editIcon = icons[1];
@@ -379,6 +380,7 @@ function deleteNote(noteElement) {
 
       if (noteIndex > -1) {
         notes.splice(noteIndex, 1);
+        saveNotesToLocalStorage();
       }
       // Elimina el elemento del DOM
       noteElement.remove();
@@ -441,6 +443,7 @@ function handleEditNote() {
   noteToUpdate.classList.remove("home", "personal", "business");
   noteToUpdate.classList.add(editedCategory.toLowerCase());
 
+  saveNotesToLocalStorage();
   displayNotes();
   closeEditDialog();
 }
@@ -449,15 +452,14 @@ function handleEditNote() {
 function handleAddNote() {
   const newNote = getValues();
   notes.push(newNote);
-  saveNotesToLocalStorage(notes);
+  saveNotesToLocalStorage();
+  
   // Añadir la nueva nota al DOM
   const notesList = document.getElementById("display-notes");
   notesList.appendChild(newNote);
 
-  // Actualiza la categoría activa para evitar inconcluencias en la UI
   categoryLinks.all.click();
 
-  // Limpia el formulario y oculta el dialogo
   completedCheckbox.checked = false;
   hideAddDialog();
 }
@@ -487,9 +489,9 @@ function handleCheckbox() {
   }
 }
 
-function filterCompletedNotes(notes) {
+function filterCompletedNotes(notesToFilter) {
   let completedNotes = [];
-  notes.forEach(note => {
+  notesToFilter.forEach(note => {
     const title = note.querySelector("h4");
     if (title.classList.contains("completed")) {
       completedNotes.push(note);
@@ -499,23 +501,63 @@ function filterCompletedNotes(notes) {
 }
 
 function saveNotesToLocalStorage() {
-  let localNotes = notes;
+  // Extraemos solo los datos (texto, id, estado)
+  const notesData = notes.map(note => {
+    return {
+      id: note.dataset.noteId,
+      creationDate: note.dataset.creationDate,
+      title: note.querySelector("h4").textContent,
+      category: note.querySelector("span").textContent,
+      description: note.querySelector("p.description").textContent,
+      date: note.querySelector(".date").textContent,
+      isCompleted: note.querySelector("h4").classList.contains("completed")
+    };
+  });
 
-  localStorage.setItem("notes", JSON.stringify(localNotes));
-  console.log(localNotes);
+  // Guardamos el array de datos simples como texto JSON
+  localStorage.setItem("notes", JSON.stringify(notesData));
 }
 
-let savedNotes = localStorage.getItem("notes");
-console.log(savedNotes);
-
 function loadNotesFromLocalStorage() {
-  if (savedNotes.length > 0) {
-    savedNotes = JSON.parse(savedNotes);
-    console.log("Parsed notes:", savedNotes);
-    displayNotes(savedNotes);
-  } else {
-    console.error("No se pudo parsear");
+  const savedNotes = localStorage.getItem("notes");
+
+  // Si hay datos guardados, los procesamos
+  if (savedNotes) {
+    const parsedNotes = JSON.parse(savedNotes);
+
+    parsedNotes.forEach(data => {
+      // Reconstruimos el HTML para cada nota
+      const noteElement = createNoteFromData(data);
+      notes.push(noteElement);
+    });
+
+    displayNotes(notes);
   }
+}
+
+// Función auxiliar para reconstruir la nota a partir de los datos guardados
+function createNoteFromData(data) {
+  const noteElement = createNote({
+    titleValue: data.title,
+    categoryValue: data.category,
+    descriptionValue: data.description
+  });
+
+  // Sobrescribimos el ID y las fechas generadas por las reales guardadas
+  noteElement.dataset.noteId = data.id;
+  noteElement.dataset.creationDate = data.creationDate;
+  noteElement.querySelector(".date").textContent = data.date;
+
+  // Si la nota estaba marcada como completada, restauramos ese estado visual
+  if (data.isCompleted) {
+    markAsCompleted(noteElement);
+    const checkboxIcon = noteElement.querySelector(".icon-unchecked");
+    if (checkboxIcon) {
+      toggleImage(checkboxIcon);
+    }
+  }
+
+  return noteElement;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
